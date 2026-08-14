@@ -84,7 +84,7 @@ function WeaponSystem.prototype.attack(self, character) -- 66
 		local ____cond17 = ____switch17 == "melee" -- 68
 		if ____cond17 then -- 68
 			do -- 68
-				local halfAngle = math.pi / 3 -- 72
+				local halfAngle = math.pi -- 72
 				local ____self_melees_0 = self.melees -- 72
 				____self_melees_0[#____self_melees_0 + 1] = __TS__New( -- 73
 					MeleeAttack, -- 74
@@ -174,7 +174,7 @@ function WeaponSystem.prototype.aimDir(self, range) -- 126
 end -- 126
 function WeaponSystem.prototype.spawnSummon(self, character) -- 140
 	local player = self.player -- 141
-	local maxSummon = character.id == "necromancer" and 3 or 2 -- 142
+	local maxSummon = math.max(1, character.projectileCount) -- 142
 	local extra = player.skillStacks.summonCount ~= nil and player.skillStacks.summonCount or 0 -- 143
 	if #self.summons >= maxSummon + extra then -- 143
 		return -- 144
@@ -201,7 +201,7 @@ function WeaponSystem.prototype.spawnSummon(self, character) -- 140
 	____self_summons_4[#____self_summons_4 + 1] = s -- 160
 end -- 140
 function WeaponSystem.prototype.refillSummons(self, character) -- 164
-	local maxSummon = character.id == "necromancer" and 3 or 2 -- 165
+	local maxSummon = math.max(1, character.projectileCount) -- 165
 	local extra = self.player.skillStacks.summonCount ~= nil and self.player.skillStacks.summonCount or 0 -- 166
 	if #self.summons < maxSummon + extra then -- 166
 		self:spawnSummon(character) -- 168

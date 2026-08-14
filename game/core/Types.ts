@@ -36,7 +36,7 @@ export interface CharacterDef {
 	attackInterval: number;
 	// 武器基础参数
 	range: number;       // 近战半径/弹道射程
-	projectileCount: number;
+	projectileCount: number; // 远程弹道数 / 召唤职业的基础召唤物数量
 	pierce: number;
 	speed: number;
 	unlockHint: string;

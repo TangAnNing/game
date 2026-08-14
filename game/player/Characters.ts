@@ -2,11 +2,11 @@
 import { CharacterDef, CharacterId } from 'game/core/Types';
 
 export const characters: Record<CharacterId, CharacterDef> = {
-	// 重剑士：近战扇形，高血量高攻击，攻速偏慢
+	// 重剑士：环身重击，高血量高攻击，攻速偏慢
 	swordsman: {
 		id: 'swordsman',
 		name: '重剑士',
-		desc: '挥舞巨剑横扫扇形范围，高血高攻',
+		desc: '挥舞巨剑环身横扫，伤害周围全部敌人',
 		color: 0xd05050,
 		weaponClass: 'melee',
 		maxHp: 120,
@@ -40,7 +40,7 @@ export const characters: Record<CharacterId, CharacterDef> = {
 	druid: {
 		id: 'druid',
 		name: '林间德鲁伊',
-		desc: '召唤林间精灵自动索敌攻击',
+		desc: '召唤两只林间精灵自动索敌攻击',
 		color: 0x50c060,
 		weaponClass: 'summon',
 		maxHp: 100,
@@ -48,7 +48,7 @@ export const characters: Record<CharacterId, CharacterDef> = {
 		baseDamage: 11,
 		attackInterval: 0.9,
 		range: 120,
-		projectileCount: 1,
+		projectileCount: 2,
 		pierce: 0,
 		speed: 320,
 		unlockHint: '初始角色',
@@ -82,7 +82,7 @@ export const characters: Record<CharacterId, CharacterDef> = {
 		baseDamage: 13,
 		attackInterval: 0.8,
 		range: 140,
-		projectileCount: 1,
+		projectileCount: 3,
 		pierce: 0,
 		speed: 300,
 		unlockHint: '无尽模式达到第 20 波解锁',

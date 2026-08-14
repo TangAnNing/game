@@ -68,8 +68,8 @@ export class WeaponSystem {
 		const baseDamage = character.baseDamage;
 		switch (character.weaponClass) {
 			case 'melee': {
-				// 扇形近战：半角 60°
-				const halfAngle = Math.PI / 3;
+				// 重剑环身横扫：半角 PI 表示完整 360° 范围。
+				const halfAngle = Math.PI;
 				this.melees.push(
 					new MeleeAttack(
 						player.pos,
@@ -139,7 +139,7 @@ export class WeaponSystem {
 	// 生成一个召唤物
 	private spawnSummon(character: CharacterDef): void {
 		const player = this.player;
-		const maxSummon = character.id === 'necromancer' ? 3 : 2;
+		const maxSummon = Math.max(1, character.projectileCount);
 		const extra = player.skillStacks['summonCount'] !== undefined ? player.skillStacks['summonCount'] : 0;
 		if (this.summons.length >= maxSummon + extra) return;
 		const angle = rng.range(0, Math.PI * 2);
@@ -162,7 +162,7 @@ export class WeaponSystem {
 
 	// 召唤物补员（死亡/消失后下次冷却补齐）
 	private refillSummons(character: CharacterDef): void {
-		const maxSummon = character.id === 'necromancer' ? 3 : 2;
+		const maxSummon = Math.max(1, character.projectileCount);
 		const extra = this.player.skillStacks['summonCount'] !== undefined ? this.player.skillStacks['summonCount'] : 0;
 		if (this.summons.length < maxSummon + extra) {
 			this.spawnSummon(character);

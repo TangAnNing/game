@@ -1,4 +1,4 @@
-// 近战攻击：扇形范围判定，短暂存在，一次结算
+// 近战攻击：支持扇形与 360° 环形范围，短暂存在并一次结算
 import { Color, DrawNode, Node, Vec2 } from 'Dora';
 import { DamageInfo } from 'game/core/Types';
 import { ctx, PlayerView } from 'game/core/GameContext';
@@ -46,8 +46,9 @@ export class MeleeAttack {
 		this.node.position = Vec2(origin.x, origin.y);
 		this.node.addTo(root);
 		this.redraw(1);
-		// 斩击特效
-		ctx.vfx?.slash(origin, facing, color, range);
+		// 环形攻击使用冲击环；普通扇形保留方向斩击。
+		if (this.isFullCircle) ctx.vfx?.ring(origin, color, range);
+		else ctx.vfx?.slash(origin, facing, color, range);
 	}
 
 	update(dt: number): void {
@@ -67,6 +68,10 @@ export class MeleeAttack {
 		return this.life <= 0;
 	}
 
+	private get isFullCircle(): boolean {
+		return this.halfAngle >= Math.PI - 0.001;
+	}
+
 	// 立即结束并移除节点（清场时调用）
 	dispose(): void {
 		this.life = 0;
@@ -78,7 +83,7 @@ export class MeleeAttack {
 		this.settled = true;
 		ctx.damageBreakablesInRadius?.(this.origin, this.range, this.baseDamage * (1 + this.player.damageBonus));
 		const candidates = ctx.findEnemiesNear !== undefined
-			? ctx.findEnemiesNear(this.origin, this.range + 40, 16)
+			? ctx.findEnemiesNear(this.origin, this.range + 40, this.isFullCircle ? 0 : 16)
 			: [];
 		for (let i = 0; i < candidates.length; i++) {
 			const enemy = asEnemy(candidates[i]);
@@ -104,13 +109,26 @@ export class MeleeAttack {
 	private redraw(alphaT: number): void {
 		this.node.clear();
 		const alpha = Math.max(0, Math.min(1, alphaT));
-		const segments = 10;
+		const segments = this.isFullCircle ? 32 : 10;
 		const verts: Vec2.Type[] = [Vec2.zero];
 		for (let i = 0; i <= segments; i++) {
 			const a = this.facing - this.halfAngle + (i / segments) * this.halfAngle * 2;
 			verts.push(Vec2(Math.cos(a) * this.range, Math.sin(a) * this.range));
 		}
 		this.node.drawPolygon(verts, Color(withAlpha(this.color, Math.round(70 * alpha))));
+		if (this.isFullCircle) {
+			for (let i = 0; i < segments; i++) {
+				const a0 = (i / segments) * Math.PI * 2;
+				const a1 = ((i + 1) / segments) * Math.PI * 2;
+				this.node.drawSegment(
+					Vec2(Math.cos(a0) * this.range, Math.sin(a0) * this.range),
+					Vec2(Math.cos(a1) * this.range, Math.sin(a1) * this.range),
+					3,
+					Color(withAlpha(0xffffff, Math.round(210 * alpha)))
+				);
+			}
+			return;
+		}
 		// 弧光边缘
 		const a0 = this.facing - this.halfAngle;
 		const a1 = this.facing + this.halfAngle;
