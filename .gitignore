@@ -1,0 +1,16 @@
+# Local Dora runtime data
+reaper_save.json
+*.log
+
+# Editor and OS metadata
+.vscode/
+.idea/
+.agent/
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# Temporary files
+*.tmp
+*.bak
+*~

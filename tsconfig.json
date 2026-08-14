@@ -1,0 +1,17 @@
+{
+	"compilerOptions": {
+		"jsx": "react",
+		"target": "ESNext",
+		"module": "ESNext",
+		"strict": true,
+		"esModuleInterop": false,
+		"skipLibCheck": true,
+		"forceConsistentCasingInFileNames": true,
+		"allowSyntheticDefaultImports": true,
+		"rootDir": "./",
+		"typeRoots": ["API"],
+		"types": ["Dora"]
+	},
+	"include": ["**/*.ts", "**/*.tsx"],
+	"exclude": ["node_modules", "dist"]
+}
