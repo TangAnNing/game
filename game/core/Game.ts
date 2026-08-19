@@ -151,6 +151,7 @@ export class Game {
 
 	// 每帧驱动
 	private update(dt: number): void {
+		audio.update(dt);
 		inputSystem.update();
 		debugPanel.update(dt);
 

@@ -6,6 +6,7 @@ import { Config } from 'game/config/Config';
 import { ObjectPool } from 'game/utils/ObjectPool';
 import { updateEnemyAI } from 'game/enemy/EnemyAI';
 import { getEnemyDef } from 'game/enemy/EnemyTypes';
+import { audio, Sfx } from 'game/audio/AudioManager';
 
 const SEGMENTS = 14;
 
@@ -304,6 +305,7 @@ export class Enemy implements EnemyView {
 		ctx.stats.kills++;
 		if (this.isElite) ctx.stats.eliteKills++;
 		if (this.isBoss) ctx.stats.bossKills++;
+		if (this.isElite || this.isBoss) audio.playSfx(Sfx.EliteDown, 0.2);
 		// 打击感
 		if (ctx.vfx) {
 			ctx.vfx.burst(this.pos, this.color, this.isBoss ? 26 : this.isElite ? 16 : 8, this.isBoss ? 240 : 140);

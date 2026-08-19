@@ -5,6 +5,7 @@ import { ctx, PlayerView } from 'game/core/GameContext';
 import { Config } from 'game/config/Config';
 import { rng } from 'game/utils/RNG';
 import { scale } from 'game/utils/MathUtils';
+import { audio, Sfx } from 'game/audio/AudioManager';
 
 export class DamageSystem {
 	// 构建伤害信息：暴击判定、属性加成、击退方向（dir 应为单位向量）
@@ -57,6 +58,11 @@ export class DamageSystem {
 				ctx.feedback.shake(info.shake);
 			}
 		}
+		// 同帧范围命中只保留一层主体音；暴击叠加短促高频强调。
+		if (info.source === 'melee') {
+			audio.playSfx(Sfx.MeleeImpact, 0.07);
+		}
+		if (info.crit) audio.playSfx(Sfx.Critical, 0.09);
 	}
 }
 

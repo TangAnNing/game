@@ -8,6 +8,7 @@ import { Bullet, asEnemy } from 'game/combat/Bullet';
 import { Summon } from 'game/combat/Summon';
 import { dirTo } from 'game/utils/MathUtils';
 import { rng } from 'game/utils/RNG';
+import { audio, Sfx } from 'game/audio/AudioManager';
 
 export class WeaponSystem {
 	private player: Player;
@@ -82,6 +83,7 @@ export class WeaponSystem {
 						this.root
 					)
 				);
+				audio.playSfx(Sfx.MeleeSwing, 0.12);
 				break;
 			}
 			case 'ranged': {
@@ -112,11 +114,14 @@ export class WeaponSystem {
 					if (this.bullets.length < 600) this.bullets.push(b);
 					else b.recycle();
 				}
+				audio.playSfx(character.id === 'gunner' ? Sfx.GunShot : Sfx.MagicCast, 0.06);
 				ctx.vfx?.flash(player.pos, character.color, 8);
 				break;
 			}
 			case 'summon': {
-				this.spawnSummon(character);
+				if (this.spawnSummon(character)) {
+					audio.playSfx(character.id === 'druid' ? Sfx.NatureSummon : Sfx.NecroSummon, 0.18);
+				}
 				break;
 			}
 		}
@@ -137,11 +142,11 @@ export class WeaponSystem {
 	}
 
 	// 生成一个召唤物
-	private spawnSummon(character: CharacterDef): void {
+	private spawnSummon(character: CharacterDef): boolean {
 		const player = this.player;
 		const maxSummon = Math.max(1, character.projectileCount);
 		const extra = player.skillStacks['summonCount'] !== undefined ? player.skillStacks['summonCount'] : 0;
-		if (this.summons.length >= maxSummon + extra) return;
+		if (this.summons.length >= maxSummon + extra) return false;
 		const angle = rng.range(0, Math.PI * 2);
 		const radius = rng.range(50, 80);
 		const pos = Vec2(player.pos.x + Math.cos(angle) * radius, player.pos.y + Math.sin(angle) * radius);
@@ -158,6 +163,7 @@ export class WeaponSystem {
 			angle
 		);
 		this.summons.push(s);
+		return true;
 	}
 
 	// 召唤物补员（死亡/消失后下次冷却补齐）

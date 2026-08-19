@@ -1,9 +1,22 @@
-// 音频管理器：占位实现，无外部资源时静默；预留 Audio 单例接线（WAV 音效 / 流式音乐）
-// 防御式：文件名空或静音时直接返回，避免对缺失资源报错
+// 音频管理器：统一音效路径、静音状态与并发节流。
 import { Audio } from 'Dora';
+
+export const Sfx = {
+	MeleeSwing: 'Audio/sfx_sword_sweep.wav',
+	MeleeImpact: 'Audio/sfx_sword_impact.wav',
+	MagicCast: 'Audio/sfx_magic_cast.wav',
+	GunShot: 'Audio/sfx_gun_shot.wav',
+	NatureSummon: 'Audio/sfx_nature_summon.wav',
+	NecroSummon: 'Audio/sfx_necro_summon.wav',
+	SummonImpact: 'Audio/sfx_familiar_hit.wav',
+	PlayerHurt: 'Audio/sfx_player_hurt.wav',
+	Critical: 'Audio/sfx_critical.wav',
+	EliteDown: 'Audio/sfx_elite_down.wav',
+} as const;
 
 export class AudioManager {
 	private muted = false;
+	private cooldowns: Record<string, number> = {};
 
 	// 静音开关：直接作用于全局音量
 	setMuted(muted: boolean): void {
@@ -15,10 +28,20 @@ export class AudioManager {
 		return this.muted;
 	}
 
-	// 播放音效（WAV）；文件缺失/静音时静默忽略
-	playSfx(name: string): void {
-		if (this.muted || name.length === 0) return;
+	// cooldown 会合并同帧的大量重复命中，避免声音叠加失真。
+	playSfx(name: string, cooldown = 0): boolean {
+		if (this.muted || name.length === 0) return false;
+		if ((this.cooldowns[name] ?? 0) > 0) return false;
 		Audio.play(name, false);
+		if (cooldown > 0) this.cooldowns[name] = cooldown;
+		return true;
+	}
+
+	update(dt: number): void {
+		for (const name in this.cooldowns) {
+			const next = this.cooldowns[name] - dt;
+			this.cooldowns[name] = next > 0 ? next : 0;
+		}
 	}
 
 	// 播放背景音乐（OGG/WAV/MP3/FLAC），循环播放
@@ -39,6 +62,7 @@ export class AudioManager {
 	// 停止所有音频
 	stopAll(): void {
 		Audio.stopAll();
+		this.cooldowns = {};
 	}
 }
 

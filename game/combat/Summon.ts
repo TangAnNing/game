@@ -6,6 +6,7 @@ import { DamageSystem } from 'game/combat/DamageSystem';
 import { asEnemy } from 'game/combat/Bullet';
 import { ObjectPool } from 'game/utils/ObjectPool';
 import { add, dist, distSq, dirTo, scale, sub, withAlpha } from 'game/utils/MathUtils';
+import { audio, Sfx } from 'game/audio/AudioManager';
 
 export class Summon {
 	// 静态池
@@ -129,6 +130,7 @@ export class Summon {
 				const dir = dirTo(this.pos, nearest.pos);
 				const info = DamageSystem.buildInfo(this.damage, player, 'summon', dir, 'physical');
 				DamageSystem.apply(nearest, info);
+				audio.playSfx(Sfx.SummonImpact, 0.08);
 				const explodeLevel = player.skillStacks['summonExplode'] ?? 0;
 				if (explodeLevel > 0) {
 					ctx.damageEnemiesInRadius?.(nearest.pos, 46 + explodeLevel * 8, {

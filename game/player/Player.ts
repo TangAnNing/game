@@ -6,6 +6,7 @@ import { ctx, PlayerView } from 'game/core/GameContext';
 import { Config } from 'game/config/Config';
 import { clamp, normalize, withAlpha } from 'game/utils/MathUtils';
 import { rng } from 'game/utils/RNG';
+import { audio, Sfx } from 'game/audio/AudioManager';
 
 export class Player implements PlayerView {
 	// ---- 属性（PlayerView 契约）----
@@ -188,6 +189,7 @@ export class Player implements PlayerView {
 		}
 		this.hp -= amount;
 		ctx.stats.damageTaken += amount;
+		audio.playSfx(Sfx.PlayerHurt, 0.16);
 		if (this.thorns > 0) {
 			ctx.damageEnemiesInRadius?.(from, 42, {
 				amount: amount * this.thorns,
